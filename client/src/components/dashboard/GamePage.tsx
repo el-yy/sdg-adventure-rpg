@@ -10,7 +10,7 @@ import { cityQuests } from '../../game/data/cityQuests';
 import type { QuestDefinition } from '@shared/types';
 import { XpSystem } from '../../game/systems/XpSystem';
 import PhaserGame from '../../game/PhaserGame';
-import { connectSocket, disconnectSocket, getSocket } from '../../services/socketService';
+import { joinRealtimeRoom, leaveRealtimeRoom, watchRoomPlayers } from '../../services/realtimeService';
 
 function getAllQuests(): QuestDefinition[] {
   return [...forestQuests, ...healthQuests, ...educationQuests, ...cityQuests];
@@ -39,22 +39,30 @@ export default function GamePage() {
   }, [profile, worldId]);
 
   useEffect(() => {
-    const socket = getSocket();
-    const markOnline = () => setServerStatus('online');
-    const markOffline = () => setServerStatus('offline');
-
-    socket.on('connect', markOnline);
-    socket.on('disconnect', markOffline);
-    socket.on('connect_error', markOffline);
-    connectSocket();
+    if (!profile || !worldId) return;
+    const roomId = worldId;
+    let unsubscribe: () => void = () => undefined;
+    const startRealtimeRoom = async () => {
+      try {
+        await joinRealtimeRoom(roomId, {
+          uid: profile.uid,
+          displayName: profile.displayName,
+          level: profile.level,
+          position: { x: 600, y: 450 },
+          joinedAt: Date.now(),
+        });
+        unsubscribe = watchRoomPlayers(roomId, () => setServerStatus('online'), () => setServerStatus('offline'));
+      } catch {
+        setServerStatus('offline');
+      }
+    };
+    void startRealtimeRoom();
 
     return () => {
-      socket.off('connect', markOnline);
-      socket.off('disconnect', markOffline);
-      socket.off('connect_error', markOffline);
-      disconnectSocket();
+      unsubscribe();
+      void leaveRealtimeRoom(roomId, profile.uid);
     };
-  }, []);
+  }, [profile, worldId]);
 
   if (!world) {
     return (

@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'demo-key',
@@ -9,9 +10,11 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'demo.appspot.com',
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '000000',
   appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:000:web:000',
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || 'https://sdg-adventure-rpg-default-rtdb.asia-southeast1.firebasedatabase.app',
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const realtimeDb = getDatabase(app);
 export default app;

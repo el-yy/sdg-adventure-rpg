@@ -8,8 +8,8 @@ A multiplayer role-playing game that educates players about the Sustainable Deve
 # Install client dependencies
 cd client && npm install
 
-# Install server dependencies
-cd ../server && npm install
+# Install client dependencies
+cd client && npm install
 
 # Set up Firebase (create a project at https://console.firebase.google.com)
 cp client/.env.example client/.env
@@ -17,7 +17,7 @@ cp client/.env.example client/.env
 
 # Start development servers
 cd client && npm run dev    # Client on :5173
-cd server && npm run dev    # Socket.io on :3001
+cd client && npm run dev    # Vite on :5173
 ```
 
 ## Tech Stack
@@ -29,7 +29,7 @@ cd server && npm run dev    # Socket.io on :3001
 | Language | TypeScript |
 | Auth | Firebase Authentication |
 | Database | Firebase Firestore |
-| Realtime | Socket.io |
+| Realtime | Firebase Realtime Database |
 | Server | Node.js + Express |
 
 ## Project Structure
@@ -44,11 +44,11 @@ SDG/
 │   │   │   ├── systems/       # XP, Quest, Achievement, Inventory
 │   │   │   ├── data/          # Quest definitions, world configs
 │   │   │   └── entities/      # Player, NPC
-│   │   ├── services/          # Firebase, Socket.io clients
+│   │   ├── services/          # Firebase and Realtime Database clients
 │   │   ├── hooks/             # React custom hooks
 │   │   └── types/             # TypeScript types
 │   └── dist/                  # Production build
-├── server/                    # Socket.io multiplayer server
+├── server/                    # Legacy local server (not required for production)
 │   └── src/
 │       ├── rooms/             # Room management
 │       ├── types/             # Server types
