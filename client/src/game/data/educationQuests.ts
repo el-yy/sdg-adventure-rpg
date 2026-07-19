@@ -1,0 +1,105 @@
+import type { QuestDefinition } from '@shared/types';
+
+export const educationQuests: QuestDefinition[] = [
+  {
+    id: 'lost-knowledge',
+    worldId: 'education',
+    name: 'The Lost Knowledge',
+    description: 'Collect learning resources and rebuild a destroyed library.',
+    sdgNumbers: [4],
+    sdgFacts: [
+      'SDG 4 aims to ensure inclusive and equitable quality education for all.',
+      '258 million children and youth are out of school globally.',
+      'Literacy is a foundation for lifelong learning.',
+      'Access to education empowers communities and reduces poverty.',
+    ],
+    steps: [
+      { id: 'assess-damage', description: 'Assess the damage to the community library', type: 'explore', target: 'old-library' },
+      { id: 'collect-books', description: 'Gather scattered books and learning materials', type: 'collect', target: 'book-scattered' },
+      { id: 'choose-curriculum', description: 'Select the most impactful curriculum focus', type: 'decide', options: [
+        { id: 'stem', text: 'Focus on STEM education', consequence: 'Builds technical skills for the future', isCorrect: true, xpReward: 45 },
+        { id: 'arts', text: 'Focus on arts and creativity', consequence: 'Develops creative thinking and expression', isCorrect: true, xpReward: 40 },
+        { id: 'basic', text: 'Focus only on basic literacy', consequence: 'Essential but limits advanced learning', isCorrect: false, xpReward: 20 },
+      ]},
+      { id: 'rebuild', description: 'Help rebuild the library structure', type: 'solve', correctAnswer: 'community-effort' },
+      { id: 'open', description: 'Grand reopening of the community library', type: 'talk', target: 'librarian' },
+    ],
+    rewards: { xp: 220, items: [{ itemId: 'book-badge', name: 'Knowledge Keeper', type: 'achievement', quantity: 1, acquiredAt: '' }], achievementId: 'knowledge-keeper' },
+    requiredLevel: 1,
+  },
+  {
+    id: 'knowledge-challenge',
+    worldId: 'education',
+    name: 'Knowledge Challenge',
+    description: 'Solve educational puzzles to unlock advanced learning tools.',
+    sdgNumbers: [4],
+    sdgFacts: [
+      'Education is the most powerful tool for changing the world.',
+      'Quality education reduces inequality and promotes peace.',
+      'Digital literacy is essential in the modern world.',
+      'Teachers are the foundation of quality education systems.',
+    ],
+    steps: [
+      { id: 'puzzle-1', description: 'Solve the math challenge', type: 'solve', correctAnswer: 'critical-thinking' },
+      { id: 'puzzle-2', description: 'Answer the science question about ecosystems', type: 'solve', correctAnswer: 'ecosystem-balance' },
+      { id: 'puzzle-3', description: 'Choose the best learning method for diverse students', type: 'decide', options: [
+        { id: 'inclusive', text: 'Use inclusive, multi-modal teaching', consequence: 'Reaches all learning styles effectively', isCorrect: true, xpReward: 40 },
+        { id: 'lecture', text: 'Traditional lecture-only approach', consequence: 'Efficient but leaves some students behind', isCorrect: false, xpReward: 15 },
+        { id: 'self', text: 'Pure self-study with no guidance', consequence: 'Some students may struggle without support', isCorrect: false, xpReward: 10 },
+      ]},
+      { id: 'share', description: 'Share knowledge with younger students', type: 'talk', target: 'young-students' },
+    ],
+    rewards: { xp: 200, items: [{ itemId: 'scholar-badge', name: 'Scholar Badge', type: 'achievement', quantity: 1, acquiredAt: '' }], achievementId: 'scholar' },
+    requiredLevel: 3,
+  },
+  {
+    id: 'digital-access',
+    worldId: 'education',
+    name: 'Bridging the Digital Divide',
+    description: 'Help provide technology access to underserved communities.',
+    sdgNumbers: [4, 10],
+    sdgFacts: [
+      '2.7 billion people still lack internet access worldwide.',
+      'The digital divide exacerbates existing inequalities.',
+      'Technology in education can accelerate learning outcomes.',
+      'Digital skills are essential for 21st-century employment.',
+    ],
+    steps: [
+      { id: 'survey', description: 'Survey technology access in the community', type: 'explore', target: 'community-hall' },
+      { id: 'source', description: 'Find ways to provide devices to students', type: 'decide', options: [
+        { id: 'refurbish', text: 'Refurbish donated computers', consequence: 'Cost-effective and environmentally friendly', isCorrect: true, xpReward: 40 },
+        { id: 'buy-new', text: 'Purchase new devices', consequence: 'Better performance but very expensive', isCorrect: false, xpReward: 15 },
+        { id: 'shared', text: 'Create shared computer labs only', consequence: 'Limited individual access time', isCorrect: false, xpReward: 25 },
+      ]},
+      { id: 'train', description: 'Train students in basic digital literacy', type: 'solve', correctAnswer: 'hands-on-learning' },
+      { id: 'connect', description: 'Set up internet access for the learning center', type: 'talk', target: 'tech-volunteer' },
+    ],
+    rewards: { xp: 250, items: [{ itemId: 'digital-badge', name: 'Digital Inclusion Champion', type: 'achievement', quantity: 1, acquiredAt: '' }], achievementId: 'digital-champion' },
+    requiredLevel: 4,
+  },
+  {
+    id: 'teacher-training',
+    worldId: 'education',
+    name: 'Empowering Teachers',
+    description: 'Support teacher development for better education quality.',
+    sdgNumbers: [4],
+    sdgFacts: [
+      'Teacher quality is the most important factor in student achievement.',
+      '69 million new teachers are needed globally by 2030.',
+      'Ongoing professional development improves teaching outcomes.',
+      'Supported teachers have higher retention rates.',
+    ],
+    steps: [
+      { id: 'observe', description: 'Observe current teaching methods in classrooms', type: 'explore', target: 'classrooms' },
+      { id: 'identify-gaps', description: 'Identify key areas where teachers need support', type: 'solve', correctAnswer: 'student-centered' },
+      { id: 'choose-method', description: 'Select the best teacher training approach', type: 'decide', options: [
+        { id: 'mentorship', text: 'Establish peer mentorship program', consequence: 'Builds lasting professional relationships', isCorrect: true, xpReward: 45 },
+        { id: 'workshop', text: 'One-time intensive workshop', consequence: 'Quick learning but limited retention', isCorrect: false, xpReward: 20 },
+        { id: 'online', text: 'Self-paced online courses only', consequence: 'Flexible but lacks hands-on practice', isCorrect: false, xpReward: 25 },
+      ]},
+      { id: 'implement', description: 'Help implement new teaching strategies', type: 'talk', target: 'head-teacher' },
+    ],
+    rewards: { xp: 230, items: [{ itemId: 'teacher-badge', name: 'Education Champion', type: 'achievement', quantity: 1, acquiredAt: '' }], achievementId: 'education-champion' },
+    requiredLevel: 5,
+  },
+];

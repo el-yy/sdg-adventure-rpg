@@ -1,0 +1,12 @@
+node_modules/
+client/node_modules/
+server/node_modules/
+client/dist/
+server/dist/
+client/.env
+server/.env
+server/serviceAccountKey.json
+*.log
+.DS_Store
+.firebase/
+
