@@ -12,9 +12,6 @@
 
 SDG Adventure RPG is a cozy multiplayer learning adventure that turns the United Nations Sustainable Development Goals into interactive stories, quests, and meaningful choices. Players explore themed worlds, help virtual communities, and learn practical ways to build a more sustainable future.
 
-> [!WARNING]
-> **Local demonstration project:** Do not enter real personal, health, or other sensitive information into local development environments. Review and harden authentication, authorization, data protection, dependencies, and deployment configuration before considering any public or production use.
-
 ## Supports
 
 The game currently includes worlds and quests connected to these Sustainable Development Goals:
