@@ -65,14 +65,20 @@ SDG/
 - **XP & Leveling**: 20 levels from SDG Beginner to SDG Guardian
 - **20 Achievements**: Unlockable badges for completing milestones
 - **Multiplayer**: Co-op rooms for 2-4 players
-- **SDG Guide**: In-game AI-style guide with facts and tips
+- **SDG Guide**: In-game field guide with facts and practical tips
 - **Leaderboards**: Global rankings by XP
 
-## Controls
+## How to Play
 
-- **WASD / Arrow Keys**: Move player
-- **E**: Interact with NPCs / Close dialog
-- **Tab**: Toggle quest log
+1. Create a Guardian account and choose an unlocked world from the dashboard.
+2. Select **Enter World** to load the map.
+3. Move with **WASD** or the **Arrow Keys**.
+4. Walk near a resident or quest area and press **E** to interact.
+5. Follow the dialogue, explore task areas, collect items, and make SDG-informed decisions.
+6. Open **Quest Log** from the game’s top bar to review active and available quests.
+7. Complete quests to earn XP, items, achievements, and access to additional worlds.
+
+The application also includes a dedicated **How to Play** field manual from the dashboard and game toolbar.
 
 ## Environment Variables
 
