@@ -10,6 +10,7 @@ import { cityQuests } from '../../game/data/cityQuests';
 import type { QuestDefinition } from '@shared/types';
 import { XpSystem } from '../../game/systems/XpSystem';
 import PhaserGame from '../../game/PhaserGame';
+import { connectSocket, disconnectSocket, getSocket } from '../../services/socketService';
 
 function getAllQuests(): QuestDefinition[] {
   return [...forestQuests, ...healthQuests, ...educationQuests, ...cityQuests];
@@ -22,6 +23,7 @@ export default function GamePage() {
   const [showQuestLog, setShowQuestLog] = useState(false);
   const [activeQuests, setActiveQuests] = useState<QuestDefinition[]>([]);
   const [completedCount, setCompletedCount] = useState(0);
+  const [serverStatus, setServerStatus] = useState<'connecting' | 'online' | 'offline'>('connecting');
 
   const world = worldId ? getWorldById(worldId) : undefined;
 
@@ -35,6 +37,24 @@ export default function GamePage() {
       setCompletedCount(profile.completedQuests.filter(q => q.questId.includes(worldId || '')).length);
     }
   }, [profile, worldId]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    const markOnline = () => setServerStatus('online');
+    const markOffline = () => setServerStatus('offline');
+
+    socket.on('connect', markOnline);
+    socket.on('disconnect', markOffline);
+    socket.on('connect_error', markOffline);
+    connectSocket();
+
+    return () => {
+      socket.off('connect', markOnline);
+      socket.off('disconnect', markOffline);
+      socket.off('connect_error', markOffline);
+      disconnectSocket();
+    };
+  }, []);
 
   if (!world) {
     return (
@@ -61,6 +81,9 @@ export default function GamePage() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span className={`server-status server-status-${serverStatus}`}>
+            {serverStatus === 'online' ? 'Co-op online' : serverStatus === 'offline' ? 'Co-op offline' : 'Connecting'}
+          </span>
           {profile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Level {profile.level}</span>

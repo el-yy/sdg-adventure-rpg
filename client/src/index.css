@@ -290,6 +290,10 @@ h1, h2, h3, h4 {
 .xp-bar-fill { background: var(--color-primary); height: 100%; transition: width .4s ease; }
 .badge { align-items: center; display: inline-flex; font-size: 10px; font-weight: 800; gap: 4px; letter-spacing: .03em; padding: 3px 7px; }
 .badge-sdg { background: #101915; border: 1px solid var(--border-strong); color: #dce7dd; }
+.server-status { align-items: center; color: var(--text-muted); display: inline-flex; font-size: 10px; font-weight: 900; gap: 6px; letter-spacing: .08em; text-transform: uppercase; }
+.server-status::before { background: currentColor; border-radius: 50%; content: ''; height: 7px; width: 7px; }
+.server-status-online { color: var(--color-primary); }
+.server-status-offline { color: var(--color-danger); }
 
 .modal-overlay { align-items: center; background: var(--bg-overlay); display: flex; inset: 0; justify-content: center; position: fixed; z-index: 1000; }
 .modal-content { background: var(--bg-card); border: 1px solid var(--border-strong); max-height: 90vh; max-width: 520px; overflow-y: auto; padding: 32px; width: 92%; }
