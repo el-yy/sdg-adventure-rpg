@@ -11,20 +11,20 @@ export interface WorldPropDefinition {
 }
 
 export interface WorldNpcDefinition {
+  id: string;
   x: number;
   y: number;
   name: string;
   dialog: string;
   frame: string;
   portrait: string;
+  questIds: string[];
+  targetAliases?: string[];
 }
 
-export interface WorldQuestZoneDefinition {
+export interface WorldObjectiveSlot {
   x: number;
   y: number;
-  width: number;
-  height: number;
-  message: string;
 }
 
 export interface WorldMapDefinition {
@@ -42,7 +42,7 @@ export interface WorldMapDefinition {
   buildings: WorldPropDefinition[];
   props: WorldPropDefinition[];
   npcs: WorldNpcDefinition[];
-  questZones: WorldQuestZoneDefinition[];
+  objectiveSlots: WorldObjectiveSlot[];
 }
 
 const horizontal = (row: number, from: number, to: number): Cell[] =>
@@ -89,16 +89,12 @@ const forest: WorldMapDefinition = {
     { frame: 'garden-carrot', x: 1640, y: 1120, scale: .8, solid: { width: 110, height: 38 } },
   ],
   npcs: [
-    { x: 420, y: 390, name: 'Elder Tree', dialog: 'The forest is losing its balance. Will you help the village restore it?', frame: 'npc-librarian', portrait: 'portrait-librarian' },
-    { x: 1040, y: 540, name: 'Ranger', dialog: 'Illegal logging has damaged the northern grove. Look for evidence along the trail.', frame: 'npc-ranger', portrait: 'portrait-ranger' },
-    { x: 1080, y: 1160, name: 'Villager', dialog: 'Sustainable forestry keeps both our homes and habitats healthy.', frame: 'npc-community', portrait: 'portrait-community' },
-    { x: 1535, y: 990, name: 'Seed Keeper', dialog: 'Take these seeds and plant new trees where the canopy has thinned.', frame: 'npc-seed-keeper', portrait: 'portrait-seed-keeper' },
+    { id: 'village-elder', x: 420, y: 390, name: 'Elder Tree', dialog: 'The forest is losing its balance. Will you help the village restore it?', frame: 'npc-librarian', portrait: 'portrait-librarian', questIds: ['dying-forest'], targetAliases: ['village-elder'] },
+    { id: 'forest-ranger', x: 1040, y: 540, name: 'Ranger', dialog: 'Illegal logging has damaged the northern grove. Look for evidence along the trail.', frame: 'npc-ranger', portrait: 'portrait-ranger', questIds: ['waste-invasion', 'wildlife-rescue'], targetAliases: ['wildlife-expert'] },
+    { id: 'climate-expert', x: 1080, y: 1160, name: 'Villager', dialog: 'Sustainable forestry keeps both our homes and habitats healthy.', frame: 'npc-community', portrait: 'portrait-community', questIds: ['carbon-tracker'], targetAliases: ['villager'] },
+    { id: 'seed-keeper', x: 1535, y: 990, name: 'Seed Keeper', dialog: 'Take these seeds and plant new trees where the canopy has thinned.', frame: 'npc-seed-keeper', portrait: 'portrait-seed-keeper', questIds: ['green-energy'], targetAliases: ['seed-source'] },
   ],
-  questZones: [
-    { x: 330, y: 720, width: 120, height: 120, message: 'Quest Started: The Dying Forest\nInvestigate the damaged grove to find the cause.' },
-    { x: 1110, y: 300, width: 120, height: 120, message: 'You found evidence of illegal logging. Report what you learned to the Ranger.' },
-    { x: 710, y: 1080, width: 110, height: 110, message: 'Quest Started: Waste Invasion\nCollect and categorize the waste near the forest trail.' },
-  ],
+  objectiveSlots: [{ x: 330, y: 720 }, { x: 710, y: 1080 }, { x: 1350, y: 760 }, { x: 1530, y: 1180 }, { x: 790, y: 340 }],
 };
 
 const health: WorldMapDefinition = {
@@ -126,11 +122,11 @@ const health: WorldMapDefinition = {
     { frame: 'fountain', x: 360, y: 1260, scale: .9, solid: { width: 58, height: 42 } },
   ],
   npcs: [
-    { x: 440, y: 495, name: 'Doctor', dialog: 'Welcome to Health World. Several villagers need help understanding preventable illness.', frame: 'npc-doctor', portrait: 'portrait-doctor' },
-    { x: 1050, y: 520, name: 'Nurse', dialog: 'Clean water and sanitation are the foundation of community health.', frame: 'npc-nurse', portrait: 'portrait-nurse' },
-    { x: 1510, y: 1010, name: 'Health Worker', dialog: 'Exercise, nutrition, and accessible care help everyone thrive.', frame: 'npc-community', portrait: 'portrait-community' },
+    { id: 'village-doctor', x: 440, y: 495, name: 'Doctor', dialog: 'Welcome to Health World. Several villagers need help understanding preventable illness.', frame: 'npc-doctor', portrait: 'portrait-doctor', questIds: ['sick-village'] },
+    { id: 'nurse', x: 1050, y: 520, name: 'Nurse', dialog: 'Clean water and sanitation are the foundation of community health.', frame: 'npc-nurse', portrait: 'portrait-nurse', questIds: ['vaccination-drive'], targetAliases: ['parents'] },
+    { id: 'health-worker', x: 1510, y: 1010, name: 'Health Worker', dialog: 'Exercise, nutrition, and accessible care help everyone thrive.', frame: 'npc-community', portrait: 'portrait-community', questIds: ['healthy-lifestyle', 'mental-health'], targetAliases: ['villager', 'community-leader'] },
   ],
-  questZones: [],
+  objectiveSlots: [{ x: 360, y: 1180 }, { x: 650, y: 1040 }, { x: 1460, y: 820 }, { x: 1320, y: 540 }, { x: 720, y: 360 }],
 };
 
 const education: WorldMapDefinition = {
@@ -157,12 +153,12 @@ const education: WorldMapDefinition = {
     { frame: 'sign', x: 930, y: 675, scale: .65 },
   ],
   npcs: [
-    { x: 515, y: 520, name: 'Teacher', dialog: 'Every learner deserves a safe classroom and a teacher with the resources to help.', frame: 'npc-teacher', portrait: 'portrait-teacher' },
-    { x: 1300, y: 520, name: 'Librarian', dialog: 'The library needs books and accessible technology so knowledge can reach everyone.', frame: 'npc-librarian', portrait: 'portrait-librarian' },
-    { x: 810, y: 1040, name: 'Student', dialog: 'I want to learn, but our community still lacks computers and reliable access.', frame: 'npc-seed-keeper', portrait: 'portrait-seed-keeper' },
-    { x: 1560, y: 1010, name: 'Principal', dialog: 'Supporting teachers creates stronger schools and better opportunities.', frame: 'npc-mayor', portrait: 'portrait-mayor' },
+    { id: 'teacher', x: 515, y: 520, name: 'Teacher', dialog: 'Every learner deserves a safe classroom and a teacher with the resources to help.', frame: 'npc-teacher', portrait: 'portrait-teacher', questIds: ['knowledge-challenge'], targetAliases: ['young-students'] },
+    { id: 'librarian', x: 1300, y: 520, name: 'Librarian', dialog: 'The library needs books and accessible technology so knowledge can reach everyone.', frame: 'npc-librarian', portrait: 'portrait-librarian', questIds: ['lost-knowledge'] },
+    { id: 'student', x: 810, y: 1040, name: 'Student', dialog: 'I want to learn, but our community still lacks computers and reliable access.', frame: 'npc-seed-keeper', portrait: 'portrait-seed-keeper', questIds: ['digital-access'], targetAliases: ['tech-volunteer'] },
+    { id: 'principal', x: 1560, y: 1010, name: 'Principal', dialog: 'Supporting teachers creates stronger schools and better opportunities.', frame: 'npc-mayor', portrait: 'portrait-mayor', questIds: ['teacher-training'], targetAliases: ['head-teacher'] },
   ],
-  questZones: [],
+  objectiveSlots: [{ x: 380, y: 900 }, { x: 740, y: 1080 }, { x: 1420, y: 980 }, { x: 1020, y: 610 }, { x: 1540, y: 650 }],
 };
 
 const city: WorldMapDefinition = {
@@ -191,13 +187,13 @@ const city: WorldMapDefinition = {
     { frame: 'sign', x: 930, y: 685, scale: .64 },
   ],
   npcs: [
-    { x: 530, y: 520, name: 'Mayor', dialog: 'Our city needs a plan that improves daily life without sacrificing the environment.', frame: 'npc-mayor', portrait: 'portrait-mayor' },
-    { x: 1120, y: 520, name: 'Urban Planner', dialog: 'Good streets connect homes, work, nature, and safe public spaces.', frame: 'npc-teacher', portrait: 'portrait-teacher' },
-    { x: 760, y: 1000, name: 'Social Worker', dialog: 'A sustainable city must work for every resident, especially those being left behind.', frame: 'npc-community', portrait: 'portrait-community' },
-    { x: 1440, y: 790, name: 'Transport Official', dialog: 'Safer walking, cycling, and public transport can transform this neighborhood.', frame: 'npc-doctor', portrait: 'portrait-doctor' },
-    { x: 1650, y: 1140, name: 'Community Leader', dialog: 'Let us turn this empty space into a community garden together.', frame: 'npc-seed-keeper', portrait: 'portrait-seed-keeper' },
+    { id: 'mayor', x: 530, y: 520, name: 'Mayor', dialog: 'Our city needs a plan that improves daily life without sacrificing the environment.', frame: 'npc-mayor', portrait: 'portrait-mayor', questIds: ['broken-city'] },
+    { id: 'urban-planner', x: 1120, y: 520, name: 'Urban Planner', dialog: 'Good streets connect homes, work, nature, and safe public spaces.', frame: 'npc-teacher', portrait: 'portrait-teacher', questIds: ['city-development'] },
+    { id: 'social-worker', x: 760, y: 1000, name: 'Social Worker', dialog: 'A sustainable city must work for every resident, especially those being left behind.', frame: 'npc-community', portrait: 'portrait-community', questIds: ['inequality-gap'] },
+    { id: 'transport-official', x: 1440, y: 790, name: 'Transport Official', dialog: 'Safer walking, cycling, and public transport can transform this neighborhood.', frame: 'npc-doctor', portrait: 'portrait-doctor', questIds: ['safe-transport'] },
+    { id: 'community-leader', x: 1650, y: 1140, name: 'Community Leader', dialog: 'Let us turn this empty space into a community garden together.', frame: 'npc-seed-keeper', portrait: 'portrait-seed-keeper', questIds: ['community-garden'], targetAliases: ['community'] },
   ],
-  questZones: [],
+  objectiveSlots: [{ x: 360, y: 900 }, { x: 720, y: 1040 }, { x: 1420, y: 900 }, { x: 1640, y: 1180 }, { x: 1020, y: 610 }],
 };
 
 export const WORLD_MAPS: Record<CozyWorldId, WorldMapDefinition> = { forest, health, education, city };

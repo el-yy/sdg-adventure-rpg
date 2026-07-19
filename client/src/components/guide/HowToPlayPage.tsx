@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 const controls = [
   ['Move', 'Arrow keys or W A S D'],
-  ['Interact', 'Press E near a person or quest area'],
+  ['Interact', 'Press E near a person, glowing objective, or collectible'],
   ['Quest log', 'Open it from the top bar while in a world'],
   ['Leave a world', 'Use Back to return to the dashboard'],
 ];
@@ -37,12 +37,12 @@ export default function HowToPlayPage() {
         <section className="guide-section">
           <span className="guide-number">02</span>
           <h2>Find a resident</h2>
-          <p>Walk close to an NPC and press <kbd>E</kbd>. Their dialogue points you toward the next task.</p>
+          <p>Find a resident with a golden <strong>!</strong>, press <kbd>E</kbd>, review the quest, then choose Accept Quest. A <strong>?</strong> marks a resident who advances your current objective.</p>
         </section>
         <section className="guide-section">
           <span className="guide-number">03</span>
           <h2>Complete the quest</h2>
-          <p>Explore marked areas, collect items, and make informed choices. Use the Quest Log when you lose track.</p>
+          <p>Follow the glowing marker to inspect places, collect three quest items, answer knowledge questions, and make decisions. Wrong answers include feedback and can be retried.</p>
         </section>
         <section className="guide-section">
           <span className="guide-number">04</span>
@@ -68,7 +68,7 @@ export default function HowToPlayPage() {
 
       <section className="guide-tip">
         <strong>Good to know</strong>
-        <p>There is no penalty for exploring. Read the SDG facts, revisit NPCs, and use the worlds as a place to test ideas.</p>
+        <p>You can keep one active quest in each world. Progress saves after every objective, so you can leave and continue later from the Quest Log.</p>
         <button className="btn btn-primary" onClick={() => navigate('/')}>Choose a world</button>
       </section>
     </main>
