@@ -1,6 +1,27 @@
 # SDG Adventure RPG
 
-A multiplayer role-playing game that educates players about the Sustainable Development Goals (SDGs) through interactive gameplay.
+> Explore. Decide. Make an impact.
+
+SDG Adventure RPG is a cozy multiplayer adventure game that turns the United Nations Sustainable Development Goals into interactive stories, quests, and choices. Explore themed worlds, help their communities, and learn practical ways to build a more sustainable future.
+
+## Why play?
+
+- Learn through action: every quest turns an SDG concept into a playable decision.
+- Explore four distinct worlds: Forest, Health, Education, and City.
+- Grow your Guardian: earn XP, unlock achievements, and develop four impact attributes.
+- Play together: join co-op rooms and compare progress on global leaderboards.
+
+## Highlights
+
+| Feature | Details |
+| --- | --- |
+| Worlds | Forest, Health, Education, and City |
+| Progression | 20 levels, from SDG Beginner to SDG Guardian |
+| Quests | Decision-based missions with practical SDG lessons |
+| Multiplayer | Co-op rooms for 2–4 players |
+| Learning tools | In-game SDG Guide with facts and practical tips |
+
+## Quick start
 
 ## Quick Start
 
@@ -8,17 +29,15 @@ A multiplayer role-playing game that educates players about the Sustainable Deve
 # Install client dependencies
 cd client && npm install
 
-# Install client dependencies
-cd client && npm install
-
 # Set up Firebase (create a project at https://console.firebase.google.com)
 cp client/.env.example client/.env
 # Edit client/.env with your Firebase config
 
-# Start development servers
-cd client && npm run dev    # Client on :5173
-cd client && npm run dev    # Vite on :5173
+# Start the client
+cd client && npm run dev    # http://localhost:5173
 ```
+
+The Firebase configuration must be available in `client/.env`; see [Environment variables](#environment-variables). The server is optional for local legacy room-management flows.
 
 ## Tech Stack
 
@@ -56,17 +75,6 @@ SDG/
 └── shared/                    # Shared types
     └── types/index.ts
 ```
-
-## Game Features
-
-- **4 SDG Worlds**: Forest, Health, Education, City
-- **18 Quests**: Decision-based quests teaching SDG concepts
-- **Character System**: 4 attributes (Environmental Knowledge, Health Awareness, Problem Solving, Community Impact)
-- **XP & Leveling**: 20 levels from SDG Beginner to SDG Guardian
-- **20 Achievements**: Unlockable badges for completing milestones
-- **Multiplayer**: Co-op rooms for 2-4 players
-- **SDG Guide**: In-game field guide with facts and practical tips
-- **Leaderboards**: Global rankings by XP
 
 ## How to Play
 
@@ -106,3 +114,20 @@ cd client && npm run build    # Production build
 # Server
 cd server && npm run build    # Compile TypeScript
 ```
+
+## Development checks
+
+```bash
+cd client
+npm run lint
+npm test
+npm run build
+```
+
+## Contributing
+
+Improvements to quest design, accessibility, gameplay systems, and SDG learning content are welcome. Keep changes focused, run the client checks above, and describe the player-facing impact in your pull request.
+
+## License
+
+No license has been specified for this repository.
