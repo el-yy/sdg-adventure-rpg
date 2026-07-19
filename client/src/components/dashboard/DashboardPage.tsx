@@ -104,7 +104,7 @@ export default function DashboardPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
           {worldDefinitions.map((world) => {
             const isUnlocked = world.requiredLevel <= level;
-            const completedCount = profile.completedQuests.filter(q => q.questId.includes(world.id)).length;
+            const completedCount = profile.completedQuests.filter(q => world.quests.includes(q.questId)).length;
 
             return (
               <div

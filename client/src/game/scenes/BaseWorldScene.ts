@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { EventBus } from '../EventBus';
-import type { WorldMapDefinition, WorldNpcDefinition, WorldQuestZoneDefinition } from '../data/worldMaps';
+import type { WorldMapDefinition, WorldNpcDefinition } from '../data/worldMaps';
+import type { QuestInteractionEvent, QuestNpcMarkerKind, QuestRuntimeState } from '../types/questRuntime';
 import { CozyDialog } from '../systems/CozyDialog';
 import { renderWorldMap } from '../systems/WorldMapRenderer';
 
@@ -8,11 +9,16 @@ interface NpcRuntime {
   sprite: Phaser.Physics.Arcade.Sprite;
   definition: WorldNpcDefinition;
   prompt: Phaser.GameObjects.Container;
+  promptLabel: Phaser.GameObjects.Text;
+  marker?: Phaser.GameObjects.Container;
+  questAction?: QuestNpcMarkerKind;
 }
 
-interface QuestRuntime {
-  zone: Phaser.GameObjects.Zone;
-  definition: WorldQuestZoneDefinition;
+interface ObjectiveRuntime {
+  object: Phaser.GameObjects.Container;
+  targetId: string;
+  itemId?: string;
+  kind: QuestInteractionEvent['kind'];
 }
 
 type Direction = 'down' | 'left' | 'right' | 'up';
@@ -24,13 +30,17 @@ export abstract class BaseWorldScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
   private npcs: NpcRuntime[] = [];
-  private quests: QuestRuntime[] = [];
+  private objectives: ObjectiveRuntime[] = [];
   private dialogue!: CozyDialog;
   private facing: Direction = 'down';
   private uiBlocked = false;
+  private hasActiveQuest = false;
   private readonly handleUiOverlay = (blocked: unknown) => {
     this.uiBlocked = Boolean(blocked);
     if (this.uiBlocked && this.player) this.player.setVelocity(0, 0);
+  };
+  private readonly handleQuestRuntime = (state: QuestRuntimeState) => {
+    if (state.worldId === this.mapDefinition.id) this.applyQuestRuntime(state);
   };
 
   create() {
@@ -38,7 +48,6 @@ export abstract class BaseWorldScene extends Phaser.Scene {
     this.createAnimations();
     this.createPlayer();
     this.createNpcs();
-    this.createQuestZones();
     this.dialogue = new CozyDialog(this, this.mapDefinition.accent);
     this.setupInput();
 
@@ -50,6 +59,7 @@ export abstract class BaseWorldScene extends Phaser.Scene {
     this.updateCameraZoom(this.scale.width, this.scale.height);
     this.scale.on(Phaser.Scale.Events.RESIZE, this.handleResize, this);
     EventBus.on('ui-overlay-changed', this.handleUiOverlay);
+    EventBus.on('quest-runtime-update', this.handleQuestRuntime);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
     EventBus.emit('current-scene-ready', this);
   }
@@ -135,20 +145,71 @@ export abstract class BaseWorldScene extends Phaser.Scene {
         .setDepth(definition.y + 4)
         .setVisible(false);
       sprite.setData('shadow', shadow);
-      this.npcs.push({ sprite, definition, prompt });
+      this.npcs.push({ sprite, definition, prompt, promptLabel: label });
     });
   }
 
-  private createQuestZones() {
-    this.mapDefinition.questZones.forEach(definition => {
-      const zone = this.add.zone(definition.x, definition.y, definition.width, definition.height);
-      this.physics.add.existing(zone, true);
-      const marker = this.add.image(definition.x, definition.y - definition.height / 2 - 22, 'cozy-characters', 'icon-quest')
-        .setDisplaySize(30, 48)
-        .setDepth(definition.y + 2);
-      this.tweens.add({ targets: marker, y: marker.y - 8, duration: 760, ease: 'Sine.inOut', yoyo: true, repeat: -1 });
-      this.quests.push({ zone, definition });
+  private applyQuestRuntime(state: QuestRuntimeState) {
+    this.hasActiveQuest = state.hasActiveQuest;
+    this.npcs.forEach(runtime => {
+      runtime.marker?.destroy(true);
+      runtime.marker = undefined;
+      runtime.questAction = undefined;
+      runtime.promptLabel.setText(runtime.definition.name);
     });
+    state.npcMarkers.forEach(marker => {
+      const runtime = this.npcs.find(npc => npc.definition.id === marker.npcId);
+      if (!runtime) return;
+      const symbol = marker.kind === 'offer' ? '!' : '?';
+      const glow = this.add.circle(0, 0, 22, marker.kind === 'offer' ? 0xf8cf61 : 0x8fce73, .95)
+        .setStrokeStyle(4, 0x5a351d);
+      const text = this.add.text(0, -1, symbol, {
+        fontFamily: 'Georgia, serif', fontSize: '25px', fontStyle: 'bold', color: '#4b2d19',
+      }).setOrigin(.5);
+      runtime.marker = this.add.container(runtime.sprite.x, runtime.sprite.y - 150, [glow, text])
+        .setDepth(runtime.sprite.y + 5);
+      runtime.questAction = marker.kind;
+      runtime.promptLabel.setText(marker.kind === 'offer' ? `Quest from ${runtime.definition.name}` : `Continue with ${runtime.definition.name}`);
+      this.tweens.add({ targets: runtime.marker, y: runtime.marker.y - 7, duration: 720, ease: 'Sine.inOut', yoyo: true, repeat: -1 });
+    });
+
+    this.objectives.forEach(runtime => runtime.object.destroy(true));
+    this.objectives = [];
+    if (!state.objective) return;
+    const objective = state.objective;
+    if (objective.stepType === 'collect') {
+      const offsets = [{ x: -54, y: 26 }, { x: 16, y: -30 }, { x: 62, y: 35 }];
+      offsets.forEach((offset, index) => {
+        const itemId = `${objective.stepId}-${index + 1}`;
+        if (objective.collectedIds.includes(itemId)) return;
+        this.objectives.push({
+          object: this.createObjectiveObject(objective.x + offset.x, objective.y + offset.y, 'Collect', true),
+          targetId: objective.targetId,
+          itemId,
+          kind: 'collectible',
+        });
+      });
+      return;
+    }
+    this.objectives.push({
+      object: this.createObjectiveObject(objective.x, objective.y, objective.stepType === 'explore' ? 'Inspect' : 'Begin', false),
+      targetId: objective.targetId,
+      kind: 'objective',
+    });
+  }
+
+  private createObjectiveObject(x: number, y: number, action: string, collectible: boolean) {
+    const glow = this.add.circle(0, 6, collectible ? 27 : 38, 0xffd66b, .22)
+      .setStrokeStyle(3, 0xffe59a, .9);
+    const icon = this.add.image(0, collectible ? 2 : -5, 'cozy-characters', 'icon-quest')
+      .setDisplaySize(collectible ? 25 : 31, collectible ? 39 : 48);
+    const prompt = this.add.text(0, 39, `E  ${action}`, {
+      fontFamily: 'Georgia, serif', fontSize: '11px', fontStyle: 'bold', color: '#4b2d19',
+      backgroundColor: '#fff0bfed', padding: { x: 7, y: 4 },
+    }).setOrigin(.5).setVisible(false).setData('quest-prompt', true);
+    const object = this.add.container(x, y, [glow, icon, prompt]).setDepth(y + 2);
+    this.tweens.add({ targets: glow, alpha: .08, scale: 1.18, duration: 820, yoyo: true, repeat: -1 });
+    return object;
   }
 
   private setupInput() {
@@ -187,6 +248,13 @@ export abstract class BaseWorldScene extends Phaser.Scene {
         && Phaser.Math.Distance.Between(this.player.x, this.player.y, sprite.x, sprite.y) < 112;
       prompt.setPosition(sprite.x, sprite.y - 126).setDepth(sprite.y + 4).setVisible(nearby);
     });
+    this.objectives.forEach(({ object }) => {
+      const nearby = !this.dialogue?.visible && !this.uiBlocked
+        && Phaser.Math.Distance.Between(this.player.x, this.player.y, object.x, object.y) < 100;
+      object.list.forEach(child => {
+        if (child instanceof Phaser.GameObjects.Text && child.getData('quest-prompt')) child.setVisible(nearby);
+      });
+    });
   }
 
   private interact() {
@@ -195,6 +263,10 @@ export abstract class BaseWorldScene extends Phaser.Scene {
       .filter(entry => entry.distance < 112)
       .sort((a, b) => a.distance - b.distance)[0]?.runtime;
     if (closestNpc) {
+      if (closestNpc.questAction || this.hasActiveQuest) {
+        EventBus.emit('quest-interaction', { kind: 'npc', npcId: closestNpc.definition.id } satisfies QuestInteractionEvent);
+        return;
+      }
       this.dialogue.show({
         speaker: closestNpc.definition.name,
         text: closestNpc.definition.dialog,
@@ -203,8 +275,15 @@ export abstract class BaseWorldScene extends Phaser.Scene {
       return;
     }
 
-    const quest = this.quests.find(({ zone }) => zone.getBounds().contains(this.player.x, this.player.y));
-    if (quest) this.dialogue.show({ speaker: 'Quest Journal', text: quest.definition.message, portrait: 'portrait-seed-keeper' });
+    const objective = this.objectives
+      .map(runtime => ({ runtime, distance: Phaser.Math.Distance.Between(this.player.x, this.player.y, runtime.object.x, runtime.object.y) }))
+      .filter(entry => entry.distance < 100)
+      .sort((a, b) => a.distance - b.distance)[0]?.runtime;
+    if (!objective) return;
+    const event: QuestInteractionEvent = objective.kind === 'collectible'
+      ? { kind: 'collectible', targetId: objective.targetId, itemId: objective.itemId! }
+      : { kind: 'objective', targetId: objective.targetId };
+    EventBus.emit('quest-interaction', event);
   }
 
   private handleResize(gameSize: Phaser.Structs.Size) {
@@ -220,5 +299,6 @@ export abstract class BaseWorldScene extends Phaser.Scene {
   private shutdown() {
     this.scale.off(Phaser.Scale.Events.RESIZE, this.handleResize, this);
     EventBus.off('ui-overlay-changed', this.handleUiOverlay);
+    EventBus.off('quest-runtime-update', this.handleQuestRuntime);
   }
 }

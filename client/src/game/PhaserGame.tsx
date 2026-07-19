@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 import { EventBus } from './EventBus';
 import { gameConfig } from './config';
+import type { QuestRuntimeState } from './types/questRuntime';
 
 interface IRefPhaserGame {
   game: Phaser.Game | null;
@@ -10,6 +11,7 @@ interface IRefPhaserGame {
 
 interface PhaserGameProps {
   worldId: string;
+  questRuntime?: QuestRuntimeState;
   currentActiveScene?: (scene: Phaser.Scene) => void;
 }
 
@@ -20,7 +22,7 @@ const sceneKeys: Record<string, string> = {
   city: 'CityWorld',
 };
 
-const PhaserGame = ({ worldId, currentActiveScene }: PhaserGameProps) => {
+const PhaserGame = ({ worldId, questRuntime, currentActiveScene }: PhaserGameProps) => {
   const gameRef = useRef<IRefPhaserGame>({ game: null, scene: null });
 
   useEffect(() => {
@@ -49,6 +51,8 @@ const PhaserGame = ({ worldId, currentActiveScene }: PhaserGameProps) => {
       if (scene.scene.key === 'BootScene') {
         const sceneKey = sceneKeys[worldId];
         if (sceneKey) scene.scene.start(sceneKey);
+      } else if (questRuntime) {
+        EventBus.emit('quest-runtime-update', questRuntime);
       }
     };
 
@@ -57,7 +61,11 @@ const PhaserGame = ({ worldId, currentActiveScene }: PhaserGameProps) => {
     return () => {
       EventBus.off('current-scene-ready', onSceneReady);
     };
-  }, [currentActiveScene, worldId]);
+  }, [currentActiveScene, questRuntime, worldId]);
+
+  useEffect(() => {
+    if (questRuntime) EventBus.emit('quest-runtime-update', questRuntime);
+  }, [questRuntime]);
 
   return <div id="game-container" />;
 };
