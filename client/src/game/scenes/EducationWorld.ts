@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { EventBus } from '../EventBus';
 import { ensurePlayerAnimations, updatePlayerAnimation } from '../systems/PlayerAnimations';
+import { buildCozyEnvironment } from '../systems/WorldEnvironment';
+import { createCozyDialog } from '../systems/CozyDialog';
+import { updateNpcPrompts } from '../systems/NpcPrompts';
 
 export class EducationWorld extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -15,9 +18,6 @@ export class EducationWorld extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.cameras.main;
-    this.add.rectangle(width / 2, height / 2, width, height, 0x1a1a2e);
-
     ensurePlayerAnimations(this);
     this.createEducationEnvironment();
     this.createPlayer();
@@ -27,19 +27,13 @@ export class EducationWorld extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
     this.cameras.main.setBounds(0, 0, 1200, 900);
+    this.cameras.main.setZoom(Math.max(1, Math.min(this.scale.width / 960, this.scale.height / 640)));
+    this.cameras.main.setBackgroundColor(0x887e63);
     EventBus.emit('current-scene-ready', this);
   }
 
   private createEducationEnvironment() {
-    for (let i = 0; i < 6; i++) {
-      this.add.image(Phaser.Math.Between(50, 1150), Phaser.Math.Between(50, 850), 'building')
-        .setScale(Phaser.Math.FloatBetween(1.5, 2.5))
-        .setTint(0xAB47BC);
-    }
-    for (let i = 0; i < 8; i++) {
-      this.add.image(Phaser.Math.Between(100, 1100), Phaser.Math.Between(100, 800), 'item')
-        .setScale(0.6).setAlpha(0.5).setTint(0xFFD700);
-    }
+    buildCozyEnvironment(this, 'education');
   }
 
   private createPlayer() {
@@ -62,23 +56,20 @@ export class EducationWorld extends Phaser.Scene {
       npc.setScale(1.5);
       npc.setData('name', data.name);
       npc.setData('dialog', data.dialog);
-      npc.setImmovable(true);
+      npc.setImmovable(true).setDepth(data.y);
 
-      this.add.text(data.x, data.y - 30, data.name, {
-        fontSize: '11px', color: '#ffffff', backgroundColor: '#00000088',
+      const nameTag = this.add.text(data.x, data.y - 34, `E  Talk to ${data.name}`, {
+        fontSize: '10px', color: '#3d291c', backgroundColor: '#f5dfaaee',
         padding: { x: 4, y: 2 },
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setVisible(false);
+      npc.setData('nameTag', nameTag);
     });
   }
 
   private createDialogBox() {
-    this.dialogBox = this.add.container(0, 0).setScrollFactor(0).setDepth(100).setVisible(false);
-    const bg = this.add.rectangle(480, 560, 800, 120, 0x1f2937, 0.95).setStrokeStyle(2, 0x9C27B0);
-    this.dialogText = this.add.text(120, 510, '', {
-      fontSize: '14px', color: '#f9fafb', wordWrap: { width: 720 }, lineSpacing: 4,
-    });
-    const hint = this.add.text(840, 610, 'Press E to close', { fontSize: '11px', color: '#6b7280' }).setOrigin(1, 1);
-    this.dialogBox.add([bg, this.dialogText, hint]);
+    const dialog = createCozyDialog(this, 0x9a6b9e);
+    this.dialogBox = dialog.container;
+    this.dialogText = dialog.text;
   }
 
   private setupInput() {
@@ -102,7 +93,9 @@ export class EducationWorld extends Phaser.Scene {
     else if (this.cursors.down.isDown || this.wasd.S.isDown) vy = speed;
     if (vx !== 0 && vy !== 0) { vx *= 0.707; vy *= 0.707; }
     this.player.setVelocity(vx, vy);
+    this.player.setDepth(this.player.y);
     updatePlayerAnimation(this.player, vx, vy);
+    updateNpcPrompts(this, this.player);
 
     if (Phaser.Input.Keyboard.JustDown(this.wasd.E)) {
       if (this.dialogVisible) {

@@ -9,26 +9,35 @@ interface IRefPhaserGame {
 }
 
 interface PhaserGameProps {
+  worldId: string;
   currentActiveScene?: (scene: Phaser.Scene) => void;
 }
 
-const PhaserGame = ({ currentActiveScene }: PhaserGameProps) => {
+const sceneKeys: Record<string, string> = {
+  forest: 'ForestWorld',
+  health: 'HealthWorld',
+  education: 'EducationWorld',
+  city: 'CityWorld',
+};
+
+const PhaserGame = ({ worldId, currentActiveScene }: PhaserGameProps) => {
   const gameRef = useRef<IRefPhaserGame>({ game: null, scene: null });
 
   useEffect(() => {
     if (gameRef.current.game) return;
+    const refs = gameRef.current;
 
     const game = new Phaser.Game({
       ...gameConfig,
     });
 
-    gameRef.current.game = game;
+    refs.game = game;
 
     return () => {
-      if (gameRef.current.game) {
-        gameRef.current.game.destroy(true);
-        gameRef.current.game = null;
-        gameRef.current.scene = null;
+      if (refs.game) {
+        refs.game.destroy(true);
+        refs.game = null;
+        refs.scene = null;
       }
     };
   }, []);
@@ -37,6 +46,10 @@ const PhaserGame = ({ currentActiveScene }: PhaserGameProps) => {
     const onSceneReady = (scene: Phaser.Scene) => {
       gameRef.current.scene = scene;
       currentActiveScene?.(scene);
+      if (scene.scene.key === 'BootScene') {
+        const sceneKey = sceneKeys[worldId];
+        if (sceneKey) scene.scene.start(sceneKey);
+      }
     };
 
     EventBus.on('current-scene-ready', onSceneReady);
@@ -44,30 +57,9 @@ const PhaserGame = ({ currentActiveScene }: PhaserGameProps) => {
     return () => {
       EventBus.off('current-scene-ready', onSceneReady);
     };
-  }, [currentActiveScene]);
+  }, [currentActiveScene, worldId]);
 
-  useEffect(() => {
-    const sceneKeys: Record<string, string> = {
-      forest: 'ForestWorld',
-      health: 'HealthWorld',
-      education: 'EducationWorld',
-      city: 'CityWorld',
-    };
-
-    const loadWorld = (worldId: string) => {
-      const sceneKey = sceneKeys[worldId];
-      if (sceneKey && gameRef.current.game) {
-        gameRef.current.game.scene.start(sceneKey);
-      }
-    };
-
-    EventBus.on('load-world', loadWorld);
-    return () => {
-      EventBus.off('load-world', loadWorld);
-    };
-  }, []);
-
-  return <div id="game-container" style={{ width: '100%', height: '100%' }} />;
+  return <div id="game-container" />;
 };
 
 export default PhaserGame;

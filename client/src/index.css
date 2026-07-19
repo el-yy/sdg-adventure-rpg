@@ -295,6 +295,43 @@ h1, h2, h3, h4 {
 .server-status-online { color: var(--color-primary); }
 .server-status-offline { color: var(--color-danger); }
 
+.game-screen { background: #172a1d; height: 100dvh; overflow: hidden; position: relative; }
+.game-stage { height: 100%; position: relative; width: 100%; }
+#game-container, #game-container canvas { display: block; height: 100% !important; image-rendering: pixelated; width: 100% !important; }
+.game-hud { align-items: flex-start; display: flex; inset: 12px 14px auto; justify-content: space-between; pointer-events: none; position: absolute; z-index: 60; }
+.game-hud-world, .game-hud-actions {
+  align-items: center;
+  background-color: #8a4d24;
+  background-image: linear-gradient(rgba(78, 38, 17, .18), rgba(78, 38, 17, .18)), url('/assets/worlds/wood-ui.png');
+  background-size: 128px 128px;
+  border: 3px solid #3c2518;
+  box-shadow: 0 3px 0 #25170f, 0 8px 18px rgba(21, 12, 7, .3);
+  color: #fff8d9;
+  display: flex;
+  gap: 10px;
+  min-height: 54px;
+  padding: 7px 9px;
+  pointer-events: auto;
+}
+.game-hud-world { border-radius: 8px 8px 12px 8px; }
+.game-hud-actions { border-radius: 8px 8px 8px 12px; }
+.game-world-icon { filter: drop-shadow(0 2px 0 #3c2518); font-size: 24px; }
+.game-hud-world h2 { color: #fff5c7; font-size: 17px; line-height: 1.05; text-shadow: 0 2px 0 #3c2518; }
+.game-hud-kicker { color: #f6d894; display: block; font-size: 8px; font-weight: 900; letter-spacing: .13em; margin-bottom: 3px; text-transform: uppercase; }
+.game-hud-button { background: #f2d598; border: 2px solid #4b2d1b; border-bottom-width: 4px; border-radius: 5px; color: #3d291c; cursor: pointer; font: 900 10px/1 var(--font-body); letter-spacing: .04em; padding: 10px 11px 8px; text-transform: uppercase; }
+.game-hud-button:hover { background: #fff0bd; transform: translateY(-1px); }
+.game-hud-button:active { border-bottom-width: 2px; transform: translateY(2px); }
+.game-hud .server-status { background: rgba(45, 26, 15, .72); border: 1px solid #b47b44; border-radius: 4px; color: #fff1bf; padding: 7px 8px; }
+.game-hud .server-status-online::before { background: #98d34f; }
+.game-hud .server-status-offline::before { background: #e36a5d; }
+.game-player-progress { align-items: center; background: rgba(45, 26, 15, .64); border: 1px solid #b47b44; border-radius: 4px; display: grid; font-size: 9px; gap: 4px 7px; grid-template-columns: auto 78px auto; padding: 7px 8px; }
+.game-player-progress .xp-bar { background: #352014; border-color: #d19a51; height: 8px; width: 78px; }
+.game-player-progress .xp-bar-fill { background: #9bd04d; }
+.quest-drawer { background: #f4dfad; border: 5px solid #5b351d; border-radius: 6px; box-shadow: 0 7px 0 #2d1b12, 0 18px 40px rgba(27, 16, 10, .35); color: #402b1d; height: calc(100% - 108px); overflow-y: auto; padding: 20px; position: absolute; right: 14px; top: 92px; width: min(350px, calc(100% - 28px)); z-index: 50; }
+.quest-drawer h3, .quest-drawer h4 { color: #3e291b; }
+.quest-drawer .card { background: #fff1c9; border-color: #b9854d; color: #4b3220; }
+.quest-drawer .card p { color: #755238 !important; }
+
 .modal-overlay { align-items: center; background: var(--bg-overlay); display: flex; inset: 0; justify-content: center; position: fixed; z-index: 1000; }
 .modal-content { background: var(--bg-card); border: 1px solid var(--border-strong); max-height: 90vh; max-width: 520px; overflow-y: auto; padding: 32px; width: 92%; }
 
@@ -330,6 +367,10 @@ kbd { background: #0d1512; border: 1px solid var(--border-strong); border-bottom
   .guide-grid { grid-template-columns: 1fr; }
   .controls-table { grid-template-columns: 1fr; }
   .guide-tip { align-items: start; grid-template-columns: 1fr; }
+  .game-hud { inset: 8px 8px auto; }
+  .game-hud-actions { gap: 6px; }
+  .game-hud .server-status, .game-player-progress { display: none; }
+  .quest-drawer { right: 8px; top: 76px; }
 }
 
 @media (max-width: 560px) {
@@ -341,4 +382,9 @@ kbd { background: #0d1512; border: 1px solid var(--border-strong); border-bottom
   .guide-lead { grid-template-columns: 72px 1fr; }
   .guide-lead img { height: 64px; width: 64px; }
   .controls-table dl > div { grid-template-columns: 1fr; gap: 4px; }
+  .game-hud-world { max-width: 58%; }
+  .game-hud-world .game-world-icon, .game-hud-kicker { display: none; }
+  .game-hud-world h2 { font-size: 13px; }
+  .game-hud-button { font-size: 8px; padding: 8px 7px 6px; }
+  .game-hud-actions .game-hud-button:last-child { display: none; }
 }

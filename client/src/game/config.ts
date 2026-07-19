@@ -19,8 +19,13 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     },
   },
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  render: {
+    antialias: false,
+    pixelArt: true,
+    roundPixels: true,
   },
   scene: [BootScene, ForestWorld, HealthWorld, EducationWorld, CityWorld],
 };

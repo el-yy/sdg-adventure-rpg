@@ -32,17 +32,17 @@ export class BootScene extends Phaser.Scene {
       fontFamily: 'Inter, system-ui, sans-serif',
     }).setOrigin(0.5);
 
-    this.load.image('player', 'assets/characters/player.png');
-    this.load.spritesheet('player-sheet', 'assets/characters/player-sheet.png', {
+    this.load.image('player', '/assets/characters/player.png');
+    this.load.spritesheet('player-sheet', '/assets/characters/player-sheet.png', {
       frameWidth: 32,
       frameHeight: 32,
     });
-    this.load.image('npc', 'assets/characters/npc.png');
-    this.load.image('tree', 'assets/worlds/tree.png');
-    this.load.image('building', 'assets/worlds/building.png');
-    this.load.image('item', 'assets/worlds/item.png');
-    this.load.image('tileset-grass', 'assets/worlds/grass.png');
-    this.load.image('tileset-stone', 'assets/worlds/stone.png');
+    this.load.image('npc', '/assets/characters/npc.png');
+    this.load.image('tree', '/assets/worlds/tree.png');
+    this.load.image('building', '/assets/worlds/building.png');
+    this.load.image('item', '/assets/worlds/item.png');
+    this.load.image('tileset-grass', '/assets/worlds/grass.png');
+    this.load.image('tileset-stone', '/assets/worlds/stone.png');
 
     this.load.on('progress', (value: number) => {
       barFill.width = (barWidth - 4) * value;

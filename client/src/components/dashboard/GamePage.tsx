@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { EventBus } from '../../game/EventBus';
 import { getWorldById } from '../../game/data/worldDefinitions';
 import { forestQuests } from '../../game/data/forestQuests';
 import { healthQuests } from '../../game/data/healthQuests';
@@ -73,57 +72,46 @@ export default function GamePage() {
     );
   }
 
-  function loadWorldScene() {
-    EventBus.emit('load-world', worldId);
-  }
-
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#000' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 16px', background: 'var(--bg-secondary)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button className="btn btn-secondary" onClick={() => navigate('/')} style={{ padding: '4px 12px' }}>
+    <div className="game-screen">
+      <div className="game-hud">
+        <div className="game-hud-world">
+          <button className="game-hud-button" onClick={() => navigate('/')}>
             ← Back
           </button>
-          <span style={{ fontSize: 20 }}>{world.icon}</span>
-          <h2 style={{ fontSize: 16, fontWeight: 600 }}>{world.name}</h2>
+          <span className="game-world-icon">{world.icon}</span>
+          <div><span className="game-hud-kicker">Now exploring</span><h2>{world.name}</h2></div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="game-hud-actions">
           <span className={`server-status server-status-${serverStatus}`}>
             {serverStatus === 'online' ? 'Co-op online' : serverStatus === 'offline' ? 'Co-op offline' : 'Connecting'}
           </span>
           {profile && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Level {profile.level}</span>
-              <div className="xp-bar" style={{ width: 100 }}>
+            <div className="game-player-progress">
+              <span>Lv. {profile.level}</span>
+              <div className="xp-bar">
                 <div className="xp-bar-fill" style={{ width: `${XpSystem.getXpProgress(profile.xp, profile.level) * 100}%` }} />
               </div>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{profile.xp} XP</span>
+              <span>{profile.xp} XP</span>
             </div>
           )}
 
-          <button className="btn btn-secondary" onClick={() => setShowQuestLog(!showQuestLog)} style={{ padding: '4px 12px' }}>
-            Quest Log ({completedCount}/{world.quests.length})
+          <button className="game-hud-button" onClick={() => setShowQuestLog(!showQuestLog)}>
+            Quests {completedCount}/{world.quests.length}
           </button>
 
-          <button className="btn btn-secondary" onClick={() => navigate('/how-to-play')} style={{ padding: '4px 12px' }}>
+          <button className="game-hud-button" onClick={() => navigate('/how-to-play')}>
             Controls
-          </button>
-
-          <button className="btn btn-primary" onClick={loadWorldScene} style={{ padding: '4px 12px' }}>
-            Enter World
           </button>
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative' }}>
-        <PhaserGame />
+      <div className="game-stage">
+        <PhaserGame worldId={worldId!} />
 
         {showQuestLog && (
-          <div style={{
-            position: 'absolute', top: 0, right: 0, width: 320, height: '100%',
-            background: 'var(--bg-overlay)', padding: 16, overflowY: 'auto', zIndex: 50,
-          }}>
+          <div className="quest-drawer">
             <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>Quest Log</h3>
             {activeQuests.length === 0 ? (
               <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>

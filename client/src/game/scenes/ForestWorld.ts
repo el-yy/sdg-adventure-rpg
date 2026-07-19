@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { EventBus } from '../EventBus';
 import { ensurePlayerAnimations, updatePlayerAnimation } from '../systems/PlayerAnimations';
+import { buildCozyEnvironment } from '../systems/WorldEnvironment';
+import { createCozyDialog } from '../systems/CozyDialog';
+import { updateNpcPrompts } from '../systems/NpcPrompts';
 
 export class ForestWorld extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -17,10 +20,6 @@ export class ForestWorld extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.cameras.main;
-
-    this.add.rectangle(width / 2, height / 2, width, height, 0x1a3a1a);
-
     ensurePlayerAnimations(this);
     this.createForestEnvironment();
     this.createPlayer();
@@ -31,26 +30,14 @@ export class ForestWorld extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
     this.cameras.main.setBounds(0, 0, 1200, 900);
+    this.cameras.main.setZoom(Math.max(1, Math.min(this.scale.width / 960, this.scale.height / 640)));
+    this.cameras.main.setBackgroundColor(0x739447);
 
     EventBus.emit('current-scene-ready', this);
   }
 
   private createForestEnvironment() {
-    for (let i = 0; i < 30; i++) {
-      const x = Phaser.Math.Between(20, 1180);
-      const y = Phaser.Math.Between(20, 880);
-      const tree = this.add.image(x, y, 'tree');
-      tree.setScale(Phaser.Math.FloatBetween(0.8, 1.5));
-      tree.setAlpha(Phaser.Math.FloatBetween(0.6, 1));
-    }
-
-    this.add.rectangle(600, 450, 1200, 900, 0x1a3a1a, 0.3);
-
-    for (let i = 0; i < 5; i++) {
-      const x = Phaser.Math.Between(100, 1100);
-      const y = Phaser.Math.Between(100, 800);
-      this.add.image(x, y, 'item').setScale(0.8).setAlpha(0.7);
-    }
+    buildCozyEnvironment(this, 'forest');
   }
 
   private createPlayer() {
@@ -73,15 +60,13 @@ export class ForestWorld extends Phaser.Scene {
       npc.setScale(1.5);
       npc.setData('name', data.name);
       npc.setData('dialog', data.dialog);
-      npc.setImmovable(true);
+      npc.setImmovable(true).setDepth(data.y);
       this.npcs.push(npc);
 
-      const nameTag = this.add.text(data.x, data.y - 30, data.name, {
-        fontSize: '11px',
-        color: '#ffffff',
-        backgroundColor: '#00000088',
+      const nameTag = this.add.text(data.x, data.y - 34, `E  Talk to ${data.name}`, {
+        fontSize: '10px', color: '#3d291c', backgroundColor: '#f5dfaaee',
         padding: { x: 4, y: 2 },
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setVisible(false);
       npc.setData('nameTag', nameTag);
     });
   }
@@ -100,7 +85,8 @@ export class ForestWorld extends Phaser.Scene {
       zone.setData('step', z.step);
       this.questZones.push(zone);
 
-      const indicator = this.add.rectangle(z.x, z.y - 40, 20, 20, 0xFFD700, 0.6);
+      const indicator = this.add.circle(z.x, z.y - 42, 13, 0xf5df7a, 1).setStrokeStyle(3, 0x5b351d);
+      this.add.text(z.x, z.y - 44, '!', { fontSize: '16px', color: '#4b2c18', fontStyle: 'bold' }).setOrigin(.5);
       this.tweens.add({
         targets: indicator,
         y: indicator.y - 8,
@@ -112,28 +98,9 @@ export class ForestWorld extends Phaser.Scene {
   }
 
   private createDialogBox() {
-    this.dialogBox = this.add.container(0, 0);
-    this.dialogBox.setScrollFactor(0);
-    this.dialogBox.setDepth(100);
-    this.dialogBox.setVisible(false);
-
-    const bg = this.add.rectangle(480, 560, 800, 120, 0x1f2937, 0.95);
-    bg.setStrokeStyle(2, 0x4CAF50);
-
-    this.dialogText = this.add.text(120, 510, '', {
-      fontSize: '14px',
-      color: '#f9fafb',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      wordWrap: { width: 720 },
-      lineSpacing: 4,
-    });
-
-    const hint = this.add.text(840, 610, 'Press E to close', {
-      fontSize: '11px',
-      color: '#6b7280',
-    }).setOrigin(1, 1);
-
-    this.dialogBox.add([bg, this.dialogText, hint]);
+    const dialog = createCozyDialog(this, 0x7d9d45);
+    this.dialogBox = dialog.container;
+    this.dialogText = dialog.text;
   }
 
   private setupInput() {
@@ -168,14 +135,9 @@ export class ForestWorld extends Phaser.Scene {
     }
 
     this.player.setVelocity(vx, vy);
+    this.player.setDepth(this.player.y);
     updatePlayerAnimation(this.player, vx, vy);
-
-    this.npcs.forEach((npc) => {
-      const nameTag = npc.getData('nameTag') as Phaser.GameObjects.Text;
-      if (nameTag) {
-        nameTag.setPosition(npc.x, npc.y - 30);
-      }
-    });
+    updateNpcPrompts(this, this.player);
 
     if (Phaser.Input.Keyboard.JustDown(this.wasd.E)) {
       this.handleInteract();
