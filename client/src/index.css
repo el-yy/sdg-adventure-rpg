@@ -295,42 +295,79 @@ h1, h2, h3, h4 {
 .server-status-online { color: var(--color-primary); }
 .server-status-offline { color: var(--color-danger); }
 
-.game-screen { background: #172a1d; height: 100dvh; overflow: hidden; position: relative; }
+.game-screen { background: #213d2b; height: 100dvh; overflow: hidden; position: relative; }
 .game-stage { height: 100%; position: relative; width: 100%; }
 #game-container, #game-container canvas { display: block; height: 100% !important; image-rendering: pixelated; width: 100% !important; }
-.game-hud { align-items: flex-start; display: flex; inset: 12px 14px auto; justify-content: space-between; pointer-events: none; position: absolute; z-index: 60; }
+.game-hud { align-items: flex-start; display: flex; inset: 14px 16px auto; justify-content: space-between; pointer-events: none; position: absolute; z-index: 60; }
 .game-hud-world, .game-hud-actions {
   align-items: center;
-  background-color: #8a4d24;
-  background-image: linear-gradient(rgba(78, 38, 17, .18), rgba(78, 38, 17, .18)), url('/assets/worlds/wood-ui.png');
-  background-size: 128px 128px;
-  border: 3px solid #3c2518;
-  box-shadow: 0 3px 0 #25170f, 0 8px 18px rgba(21, 12, 7, .3);
-  color: #fff8d9;
+  background-color: #74401f;
+  background-image: linear-gradient(90deg, rgba(255, 210, 115, .08), rgba(58, 27, 13, .2)), url('/assets/worlds/wood-ui.png');
+  background-size: auto, 112px 112px;
+  border: 3px solid #352014;
+  box-shadow: 0 3px 0 #1f130c, 0 9px 24px rgba(24, 14, 8, .27), inset 0 0 0 2px rgba(219, 147, 67, .52);
+  color: #fff2bf;
   display: flex;
-  gap: 10px;
-  min-height: 54px;
-  padding: 7px 9px;
+  gap: 7px;
+  min-height: 50px;
+  padding: 6px;
   pointer-events: auto;
 }
-.game-hud-world { border-radius: 8px 8px 12px 8px; }
-.game-hud-actions { border-radius: 8px 8px 8px 12px; }
-.game-world-icon { filter: drop-shadow(0 2px 0 #3c2518); font-size: 24px; }
-.game-hud-world h2 { color: #fff5c7; font-size: 17px; line-height: 1.05; text-shadow: 0 2px 0 #3c2518; }
-.game-hud-kicker { color: #f6d894; display: block; font-size: 8px; font-weight: 900; letter-spacing: .13em; margin-bottom: 3px; text-transform: uppercase; }
-.game-hud-button { background: #f2d598; border: 2px solid #4b2d1b; border-bottom-width: 4px; border-radius: 5px; color: #3d291c; cursor: pointer; font: 900 10px/1 var(--font-body); letter-spacing: .04em; padding: 10px 11px 8px; text-transform: uppercase; }
-.game-hud-button:hover { background: #fff0bd; transform: translateY(-1px); }
-.game-hud-button:active { border-bottom-width: 2px; transform: translateY(2px); }
-.game-hud .server-status { background: rgba(45, 26, 15, .72); border: 1px solid #b47b44; border-radius: 4px; color: #fff1bf; padding: 7px 8px; }
-.game-hud .server-status-online::before { background: #98d34f; }
-.game-hud .server-status-offline::before { background: #e36a5d; }
-.game-player-progress { align-items: center; background: rgba(45, 26, 15, .64); border: 1px solid #b47b44; border-radius: 4px; display: grid; font-size: 9px; gap: 4px 7px; grid-template-columns: auto 78px auto; padding: 7px 8px; }
-.game-player-progress .xp-bar { background: #352014; border-color: #d19a51; height: 8px; width: 78px; }
-.game-player-progress .xp-bar-fill { background: #9bd04d; }
-.quest-drawer { background: #f4dfad; border: 5px solid #5b351d; border-radius: 6px; box-shadow: 0 7px 0 #2d1b12, 0 18px 40px rgba(27, 16, 10, .35); color: #402b1d; height: calc(100% - 108px); overflow-y: auto; padding: 20px; position: absolute; right: 14px; top: 92px; width: min(350px, calc(100% - 28px)); z-index: 50; }
-.quest-drawer h3, .quest-drawer h4 { color: #3e291b; }
-.quest-drawer .card { background: #fff1c9; border-color: #b9854d; color: #4b3220; }
-.quest-drawer .card p { color: #755238 !important; }
+.game-hud-world { border-radius: 7px 7px 11px; padding-right: 13px; }
+.game-hud-actions { border-radius: 7px 7px 7px 11px; }
+.game-world-icon { filter: drop-shadow(0 2px 0 #352014); font-size: 22px; margin: 0 3px; }
+.game-hud-world h2 { color: #fff1b5; font: 700 17px/1.05 Georgia, serif; letter-spacing: .01em; text-shadow: 0 2px 0 #3c2518; }
+.game-hud-kicker { color: #eecb7d; display: block; font-size: 7px; font-weight: 900; letter-spacing: .17em; margin-bottom: 4px; text-transform: uppercase; }
+.game-hud-icon-button {
+  align-items: center; background: #f3d79a; border: 2px solid #422819; border-bottom-width: 4px; border-radius: 5px;
+  color: #3c281b; cursor: pointer; display: inline-flex; font: 900 10px/1 var(--font-body); gap: 2px; height: 42px;
+  justify-content: center; min-width: 42px; padding: 3px; transition: filter .12s ease, transform .12s ease;
+}
+.game-hud-icon-button img { height: 30px; image-rendering: pixelated; object-fit: contain; width: 30px; }
+.game-hud-icon-button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.game-hud-icon-button:active { border-bottom-width: 2px; transform: translateY(2px); }
+.game-hud-action { min-width: 44px; }
+.game-hud-action span { margin-right: 4px; }
+.game-status-chip { align-items: center; background: rgba(48, 28, 17, .76); border: 1px solid #ad7643; border-radius: 4px; display: flex; height: 38px; padding: 0 8px 0 3px; }
+.game-status-chip img { height: 27px; image-rendering: pixelated; object-fit: contain; width: 27px; }
+.game-hud .server-status { color: #fff0bc; font-size: 8px; gap: 5px; }
+.game-hud .server-status::before { height: 6px; width: 6px; }
+.game-hud .server-status-online::before { background: #9ed84f; box-shadow: 0 0 5px #9ed84f; }
+.game-hud .server-status-offline::before { background: #e46b5f; }
+.game-player-progress { align-items: center; background: rgba(48, 28, 17, .72); border: 1px solid #ad7643; border-radius: 4px; display: grid; font-size: 9px; gap: 2px 5px; grid-template-columns: 26px auto 52px; height: 38px; padding: 2px 7px 2px 3px; }
+.game-player-progress > img { grid-row: span 2; height: 25px; image-rendering: pixelated; object-fit: contain; width: 25px; }
+.game-level-label { color: #fff0bc; font-weight: 900; }
+.game-xp-label { color: #e8cb88; font-size: 8px; text-align: right; }
+.game-player-progress .xp-bar { background: #342014; border-color: #c78a46; grid-column: 2 / 4; height: 6px; width: 100%; }
+.game-player-progress .xp-bar-fill { background: linear-gradient(90deg, #7cab3f, #b6df62); }
+
+.quest-drawer, .controls-drawer {
+  background-color: #f4dfa9;
+  background-image: repeating-linear-gradient(0deg, rgba(117, 75, 42, .025), rgba(117, 75, 42, .025) 2px, transparent 2px, transparent 5px);
+  border: 5px solid #5b351d; border-radius: 7px; box-shadow: 0 7px 0 #2d1b12, 0 20px 48px rgba(27, 16, 10, .38), inset 0 0 0 2px #c58b4b;
+  color: #402b1d;
+}
+.quest-drawer { height: calc(100% - 102px); overflow-y: auto; padding: 18px; pointer-events: auto; position: absolute; right: 16px; top: 84px; width: min(370px, calc(100% - 32px)); z-index: 58; }
+.game-panel-heading { align-items: center; border-bottom: 2px solid #b9844c; display: flex; justify-content: space-between; margin-bottom: 16px; padding: 0 2px 12px; }
+.game-panel-heading span { color: #9b673c; display: block; font-size: 8px; font-weight: 900; letter-spacing: .16em; margin-bottom: 3px; text-transform: uppercase; }
+.game-panel-heading h3 { color: #3d281a; font: 700 22px/1 Georgia, serif; }
+.game-panel-heading button { background: #7d4726; border: 2px solid #402719; border-radius: 4px; color: #ffe9aa; cursor: pointer; font: 900 20px/1 Georgia, serif; height: 31px; width: 31px; }
+.quest-empty { background: #fff0c4; border: 1px dashed #b27c46; color: #765337; font: 14px/1.55 Georgia, serif; padding: 14px; }
+.quest-entry { background: rgba(255, 241, 201, .72); border: 1px solid #c29159; border-left: 4px solid #9b6b38; margin-bottom: 9px; padding: 11px 12px; }
+.quest-entry-active { border-left-color: #6e963c; box-shadow: inset 0 0 0 1px rgba(110, 150, 60, .14); }
+.quest-entry h4 { color: #3e291b; font: 700 15px/1.25 Georgia, serif; }
+.quest-entry p { color: #78563b; font: 12px/1.45 Georgia, serif; margin-top: 5px; }
+.quest-badges { display: flex; gap: 4px; margin-top: 8px; }
+.quest-section-title { color: #51351f; font: 700 16px/1 Georgia, serif; margin: 19px 0 10px; }
+
+.game-overlay-scrim { align-items: center; background: rgba(28, 23, 15, .42); display: flex; inset: 0; justify-content: center; pointer-events: auto; position: absolute; z-index: 57; }
+.controls-drawer { padding: 20px; width: min(470px, calc(100% - 28px)); }
+.control-list { display: grid; gap: 8px; }
+.control-list > div { align-items: center; background: rgba(255, 241, 201, .65); border: 1px solid #c29159; display: grid; gap: 14px; grid-template-columns: 112px 1fr; padding: 9px 11px; }
+.control-list kbd { background: #70401f; border-color: #382217; color: #ffe9ac; text-align: center; }
+.control-list span { color: #5f432e; font: 13px/1.35 Georgia, serif; }
+.controls-tip { color: #79583d; font: italic 13px/1.5 Georgia, serif; margin: 15px 2px; }
+.controls-guide-link { background: #739443; border: 2px solid #3d5628; border-bottom-width: 4px; border-radius: 4px; color: #fff5ce; cursor: pointer; font: 900 10px/1 var(--font-body); letter-spacing: .06em; padding: 11px 14px 9px; text-transform: uppercase; width: 100%; }
 
 .modal-overlay { align-items: center; background: var(--bg-overlay); display: flex; inset: 0; justify-content: center; position: fixed; z-index: 1000; }
 .modal-content { background: var(--bg-card); border: 1px solid var(--border-strong); max-height: 90vh; max-width: 520px; overflow-y: auto; padding: 32px; width: 92%; }
@@ -368,9 +405,12 @@ kbd { background: #0d1512; border: 1px solid var(--border-strong); border-bottom
   .controls-table { grid-template-columns: 1fr; }
   .guide-tip { align-items: start; grid-template-columns: 1fr; }
   .game-hud { inset: 8px 8px auto; }
-  .game-hud-actions { gap: 6px; }
-  .game-hud .server-status, .game-player-progress { display: none; }
-  .quest-drawer { right: 8px; top: 76px; }
+  .game-hud-actions { gap: 4px; }
+  .game-status-chip { display: none; }
+  .game-player-progress { grid-template-columns: 24px auto; width: 108px; }
+  .game-player-progress .game-xp-label { display: none; }
+  .game-player-progress .xp-bar { grid-column: 2; }
+  .quest-drawer { right: 8px; top: 74px; }
 }
 
 @media (max-width: 560px) {
@@ -385,6 +425,11 @@ kbd { background: #0d1512; border: 1px solid var(--border-strong); border-bottom
   .game-hud-world { max-width: 58%; }
   .game-hud-world .game-world-icon, .game-hud-kicker { display: none; }
   .game-hud-world h2 { font-size: 13px; }
-  .game-hud-button { font-size: 8px; padding: 8px 7px 6px; }
-  .game-hud-actions .game-hud-button:last-child { display: none; }
+  .game-hud-world { padding-right: 8px; }
+  .game-hud-icon-button { height: 38px; min-width: 38px; }
+  .game-hud-icon-button img { height: 27px; width: 27px; }
+  .game-player-progress { display: none; }
+  .game-hud-action span { display: none; }
+  .quest-drawer { height: calc(100% - 82px); top: 66px; }
+  .control-list > div { gap: 9px; grid-template-columns: 92px 1fr; }
 }
